@@ -76,16 +76,20 @@ function setup() {
 }
 
 function checkKeys() {
-    if(keyIsDown(LEFT_ARROW)) {
+    // A
+    if(keyIsDown(65)) {
         player.xpos = player.xpos - PLAYER_SPEED;
     }
-    if(keyIsDown(RIGHT_ARROW)) {
+    // D
+    if(keyIsDown(68)) {
         player.xpos = player.xpos + PLAYER_SPEED;
     }
-    if(keyIsDown(UP_ARROW)) {
+    // W
+    if(keyIsDown(87)) {
         player.ypos = player.ypos - PLAYER_SPEED;
     }
-    if(keyIsDown(DOWN_ARROW)) {
+    // S
+    if(keyIsDown(83)) {
         player.ypos = player.ypos + PLAYER_SPEED;
     }
 }
