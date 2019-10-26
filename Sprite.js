@@ -65,24 +65,24 @@ class Sprite extends SP {
         this.xv = xv;
         this.yv = yv;
     }
-    setxVel(xvel, direction = 'right') {
+
+    setxVel(xvel, direction) {
         if(direction === 'right') {
             this.xv = xvel;
         } else if(direction === 'left') {
             this.xv = -xvel;
         } else {
-            console.log("Invalid direction! Setting default direction(right)...");
             this.xv = xvel;
         }
     }
-    setyVel(yvel, direction = 'up') { 
+
+    setyVel(yvel, direction) { 
         if(direction === 'up') {
             this.yv = -yvel;
         } else if(direction === 'down') {
             this.yv = yvel;
         } else {
-            console.log("Invalid direction! Setting default direction(up)...");
-            this.yv = -yvel;
+            this.yv = yvel;
         }
     }
     

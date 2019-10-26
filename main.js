@@ -1,34 +1,43 @@
 let monsterIMG, playerImg, missileIMG;
-const ROWS = 3;
-const COLS = 10;
 const WIDTH = 1024;
 const HEIGHT = 768;
 const MISSILE_SPEED = 16;
 const PLAYER_SPEED = 6;
 let GAME_OVER = false;
-let NUM_ALIVE = ROWS * COLS;
-let monsters = new Array(ROWS * COLS);
+
+let LEVEL = 5;
+let NUM_MONSTERS = LEVEL * 2;
+let NUM_ALIVE = NUM_MONSTERS;
+
+let monsters = new Array(NUM_MONSTERS);
 let player;
 let missile;
 
 function createPlayer() {
     player = new Sprite(playerIMG, 450, 700, false);
-    player.setBoundry(0, WIDTH - 100, 550, 700);
+    player.setBoundry(0, WIDTH - 100, 550, 700, 'stop');
 }
 
 function createMissile() {
     missile = new Sprite(missileIMG, 0, 0, true);
 }
 
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 function createMonsters() {
 
     let ypos = 40;
     for(let i = 0; i < monsters.length; i++)
     {
-        let xpos = 110 + (((i + 1) * 80) % (COLS * 80));
+        let xpos = Math.floor(Math.random() * (WIDTH));
+        let ypos = Math.floor(Math.random() * (HEIGHT/4));
         monsters[i] = new Sprite(monsterIMG, xpos, ypos, false);
-        if((i+1) % COLS == 0)
-            ypos+= 80;
+        monsters[i].setBoundry(0,WIDTH - 100,0, 300, 'bounce');
+        monsters[i].setxVel(getRandomInt(1,4) == 2? -1:1);
+        monsters[i].setyVel(getRandomInt(1,4) == 3? 1:-1);
     }   
 }
 
@@ -64,7 +73,7 @@ function preload() {
     monsterIMG = loadImage('./data/monster.png');
     playerIMG = loadImage('./data/ship.png');
     missileIMG = loadImage('./data/rocket.png', img => {
-        img.resize(25,0);
+        img.resize(30,0);
     });
 }
 
@@ -95,8 +104,8 @@ function checkKeys() {
 }
 
 function resetGame() {
-    NUM_ALIVE = ROWS * COLS;
-    monsters = new Array(ROWS * COLS);
+    NUM_ALIVE = NUM_MONSTERS;
+    monsters = new Array(NUM_MONSTERS);
     SP.sprites = new Array();
     createMonsters();
     createPlayer();

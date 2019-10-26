@@ -38,25 +38,43 @@ class SP {
     }
 
     checkBoundaries() {
+
         if(this.xpos < this.xMIN) {
-            this.xpos = this.xMIN;
+            if(this.onBoundryHit === 'bounce') {
+                this.xv = -1 * this.xv;
+            } else {
+                this.xpos = this.xMIN;
+            }
         } else if(this.xpos > this.xMAX) {
-            this.xpos = this.xMAX;
+            if(this.onBoundryHit === 'bounce') {
+                this.xv = -1 * this.xv;
+            } else {
+                this.xpos = this.xMAX;
+            }
         }
 
         if(this.ypos < this.yMIN) {
-            this.ypos = this.yMIN;
+            if(this.onBoundryHit === 'bounce') {
+                this.yv = -1 * this.yv; 
+            } else {
+                this.ypos = this.yMIN;
+            }
         } else if(this.ypos > this.yMAX) {
-            this.ypos = this.yMAX;
+            if(this.onBoundryHit === 'bounce') {
+                this.yv = -1 * this.yv;
+            } else {
+                this.ypos = this.yMAX;
+            }
         }
     }
 
-    setBoundry(xMIN, xMAX, yMIN, yMAX) {
+    setBoundry(xMIN, xMAX, yMIN, yMAX, onBoundryHit) {
         this.hasBounderies = true;
         this.xMIN = xMIN;
         this.xMAX = xMAX;
         this.yMIN = yMIN;
         this.yMAX = yMAX;
+        this.onBoundryHit = onBoundryHit;
     }
 
     removeBoundry() {
