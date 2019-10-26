@@ -15,7 +15,7 @@ let missile;
 
 function createPlayer() {
     player = new Sprite(playerIMG, 450, 700, false);
-    player.setBoundry(0, WIDTH - 100, 550, 700, 'stop');
+    player.setBoundry(-50, WIDTH - 50, 550, 700, 'stop');
 }
 
 function createMissile() {
@@ -127,6 +127,6 @@ function pre() {
 
 function draw() {
     pre();
-    background(0);
+    background(54);
     SP.updateSprites();         
 }
