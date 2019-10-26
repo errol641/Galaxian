@@ -1,20 +1,24 @@
 class SP {
 
     constructor() {
-        SP.sprites.push(this);
+        let sprite = new Node(this);
+        SP.sprites.add(sprite);
     }
 
     static updateSprites() {
-        for(let i = 0; i < SP.sprites.length; i++) {
-            let sp = SP.sprites[i];
+        let ptr = SP.sprites.head;
+        while(ptr != null)
+        {
+            let sp = ptr.payload;
             if(!sp.isDead)
             {
-                sp.show();
-                sp.move();
                 if(sp.hasBounderies) {
                     sp.checkBoundaries();
-                }            
+                }
+                sp.show();
+                sp.move();            
             }
+            ptr = ptr.next;
         }   
     }
 
@@ -67,7 +71,7 @@ class SP {
             }
         }
     }
-
+    
     setBoundry(xMIN, xMAX, yMIN, yMAX, onBoundryHit) {
         this.hasBounderies = true;
         this.xMIN = xMIN;
@@ -81,4 +85,4 @@ class SP {
         this.hasBounderies = false;
     }
 }
-SP.sprites = new Array();
+SP.sprites = new LinkedList();

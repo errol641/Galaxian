@@ -1,18 +1,19 @@
 let monsterIMG, playerImg, missileIMG;
 const WIDTH = 1024;
 const HEIGHT = 768;
-const MISSILE_SPEED = 16;
+const MISSILE_SPEED = 20;
+const MONSTER_MISSILE_SPEED = 5;
 const PLAYER_SPEED = 6;
 const DIFFICULTY = 20;
 let GAME_OVER = false;
+let INVERTAL;
 
-let LEVEL = 8;
+let LEVEL = 5;
 let NUM_MONSTERS = LEVEL * 2;
 let NUM_ALIVE = NUM_MONSTERS;
 
-let monsters = new Array(NUM_MONSTERS);
+let monsters = new LinkedList();
 let player;
-let monsterMissile;
 let missile;
 
 function createPlayer() {
@@ -20,9 +21,8 @@ function createPlayer() {
     player.setBoundry(-50, WIDTH - 50, 550, 700, 'stop');
 }
 
-function createMissiles() {
+function createMissile() {
     missile = new Sprite(missileIMG, 0, 0, true);
-    monsterMissile = new Sprite(missileIMG,0,0, true);
 }
 
 function getRandomInt(min, max) {
@@ -32,15 +32,18 @@ function getRandomInt(min, max) {
 }
 function createMonsters() {
 
-    for(let i = 0; i < monsters.length; i++)
+    for(let i = 0; i < NUM_MONSTERS; i++)
     {
         let xpos = Math.floor(Math.random() * (WIDTH));
         let ypos = Math.floor(Math.random() * (HEIGHT/4));
-        monsters[i] = new Sprite(monsterIMG, xpos, ypos, false);
-        monsters[i].setBoundry(0,WIDTH - 100,0, 300, 'bounce');
-        monsters[i].setxVel(getRandomInt(1,4) == 2? -1:1);
-        monsters[i].setyVel(getRandomInt(1,4) == 3? 1:-1);
-    }   
+        let monster = new Sprite(monsterIMG, xpos, ypos, false);
+        monster.setBoundry(0,WIDTH - 100,0, 300, 'bounce');
+        monster.setxVel(getRandomInt(1,4) == 2? -1:1);
+        monster.setyVel(getRandomInt(1,4) == 3? 1:-1);
+
+        let newNode = SP.sprites.peek();
+        monsters.add(newNode);
+    }       
 }
 
 function updatePlayer() {
@@ -56,16 +59,52 @@ function fireMissile() {
     missile.setDead(false);
 }
 
+function calculateAngle(opp, adj) {
+    return Math.atan(opp/adj);
+}
+
+function fireMonsterMissile() {
+
+    let monsterNode = monsters.head;
+    while(monsterNode != null) {
+        let monster = monsterNode.payload;
+        if(!monster.isDead) {
+            //let x = getRandomInt(0,1);
+            if(true) {
+
+                let x = monster.xpos + (monster.width / 2) - (missileIMG.width / 2);
+                let y = monster.ypos + missileIMG.height;   
+                let dx = player.xpos - monster.xpos;
+                let dy = player.ypos - monster.ypos;
+                let magnitude = Math.sqrt((dx * dx) + (dy * dy));
+                dx = (MONSTER_MISSILE_SPEED * dx) / magnitude; 
+                dy = (MONSTER_MISSILE_SPEED * dy) / magnitude;
+                let monsterMissile = new Sprite(missileIMG, x, y, false);
+                monsterMissile.setVelocity(dx,dy);
+            }
+        }
+        monsterNode = monsterNode.next;
+    }
+}   
+
 function processCollisions() {
 
-    if(missile.isOnScreen()) {
-        for(let i = 0; i < monsters.length; i++) {
-            let monster = monsters[i];
-            if(!monster.isDead && monster.collidesWith(missile))
-            {   
-                monster.setDead(true);
+    if(missile.isOnScreen() && missile.ypos <= 300) {
+        let monsterNode = monsters.head;
+        while(monsterNode != null) {
+            let monster = monsterNode.payload;
+            if(missile.collidesWith(monster)) {
                 missile.setDead(true);
+                monster.setDead(true);
+                
+                // Remove monster from list
+                let hold = monsterNode;
+                monsterNode = monsterNode.next;
+                monsters.remove(hold);
+
                 --NUM_ALIVE;
+            } else {
+                monsterNode = monsterNode.next;
             }
         }
     }
@@ -83,7 +122,8 @@ function setup() {
     createCanvas(WIDTH,HEIGHT);
     createMonsters();
     createPlayer();
-    createMissiles();
+    createMissile();
+    INVERTAL = setInterval(fireMonsterMissile, 3000);
 }
 
 function checkKeys() {
@@ -106,12 +146,16 @@ function checkKeys() {
 }
 
 function resetGame() {
+    NUM_MONSTERS = LEVEL * 2;
     NUM_ALIVE = NUM_MONSTERS;
-    monsters = new Array(NUM_MONSTERS);
-    SP.sprites = new Array();
+    monsters = new LinkedList();
+    SP.sprites = new LinkedList();
+    
+    let newNode = new Node(player);
+    SP.sprites.add(newNode);
+
     createMonsters();
-    createPlayer();
-    createMissiles();
+    createMissile();
 }
 
 function keyPressed() {
@@ -122,13 +166,16 @@ function keyPressed() {
 
 function pre() {
     processCollisions();
-    if(NUM_ALIVE == 0)
-        resetGame();
     checkKeys();
+    if(NUM_ALIVE == 0) {
+        LEVEL++;
+        resetGame();
+    }
 }
 let r = getRandomInt(0,255);
 let g = getRandomInt(0,255);
 let b = getRandomInt(0,255);
+
 function draw() {
     pre();
     background(r,g,b);               

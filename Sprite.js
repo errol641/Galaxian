@@ -66,6 +66,11 @@ class Sprite extends SP {
         this.yv = yv;
     }
 
+    setVelocity(xv, yv) {
+        this.xv = xv;
+        this.yv = yv;
+    }
+
     setxVel(xvel, direction) {
         if(direction === 'right') {
             this.xv = xvel;
@@ -84,22 +89,6 @@ class Sprite extends SP {
         } else {
             this.yv = yvel;
         }
-    }
-    
-    getXPos() {
-        return this.xpos;
-    }
-    getYPos() {
-        return this.ypos;
-    }
-    getxVel() {
-        return this.xv;
-    }
-    getyVel() {
-        return this.yv;
-    } 
-    isDead() {
-        return this.isDead;
     }
     show() {
         image(this.img, this.xpos, this.ypos);
