@@ -1,5 +1,5 @@
 let monsterIMG, playerImg, missileIMG;
-let popSound, explosionSound;
+let popSound, explosionSound, missileSound;
 let backgroundImage, gameOver;
 let explosionVideo;
 let restart;
@@ -18,6 +18,7 @@ let LEVEL = 1;
 let NUM_MONSTERS = (LEVEL * 2) + 2;
 let NUM_MONSTER_MISSILES = NUM_MONSTERS;
 let NUM_ALIVE = NUM_MONSTERS;
+let KILL_COUNT = 0;
 
 let Monsters = new LinkedList();
 let monsterMissiles = new Array();
@@ -25,8 +26,8 @@ let Player;
 let playerMissile;
 
 function createPlayer() {
-    Player = new Sprite(playerIMG, 450, 700, true);
-    Player.setBoundry(-50, WIDTH - 50, 550, 700, 'stop');
+    Player = new Sprite(playerIMG, 450, 690, true);
+    Player.setBoundry(-50, WIDTH - 50, 550, 690, 'stop');
 }
 
 function createMissile() {
@@ -61,6 +62,7 @@ function fireMissile() {
     playerMissile.setXY(x,y);
     playerMissile.setyVel(MISSILE_SPEED, 'up');
     playerMissile.setVisible(true);
+    missileSound.play();
 }
 
 function calculateAngle(opp, adj) {
@@ -72,6 +74,9 @@ function fireMonsterMissiles() {
     while(monsterNode != null) {
         let monster = monsterNode.payload;
         monster.shootMissileTowards(Player);
+        if(!missileSound.isPlaying()) {
+            missileSound.play();
+        }
         monster.moveRandomly();
         monsterNode = monsterNode.next;
     }
@@ -99,6 +104,8 @@ function processCollisions() {
                     popSound.play();
                 }
 
+                KILL_COUNT++;
+
             } else {
                 monsterNode = monsterNode.next;
             }
@@ -117,6 +124,14 @@ function processCollisions() {
     }
 }
 
+function drawStats() {
+    textFont('Courier', 14);
+    fill(255);
+    text('Level: ' + LEVEL, 940 , 755);
+    //820,600
+    text('Kill Count: ' + KILL_COUNT, 10, 755);
+}
+
 function preload() {
     monsterIMG = loadImage('./data/monster.png');
     playerIMG = loadImage('./data/ship.png');
@@ -124,11 +139,13 @@ function preload() {
         img.resize(30,0);
     });
 
-    soundFormats('wav');
+    soundFormats('wav', 'mp3');
     popSound = loadSound('./data/pop.wav');
     popSound.setVolume(0.25);
-    explosionSound = loadSound('./data/explode.wav');
-    explosionSound.setVolume(0.25);
+    explosionSound = loadSound('./data/explosion2-1.mp3');
+    explosionSound.setVolume(0.05);
+    missileSound = loadSound('./data/missile_sound.wav');
+    missileSound.setVolume(0.05);
 
     backgroundImage = loadImage('./data/background.png');
     gameOver = loadImage('./data/gameOver.png');
@@ -170,10 +187,10 @@ function checkKeys() {
     }
 }
 
-function showGameOver() {
-    LEVEL = 1;
+function showGameOver() { 
     background(0);
     background(gameOver);
+    drawStats();
     if(!explosionVideo.elt.ended) {
         explosionVideo.play();
         image(explosionVideo, Player.xpos - 50, Player.ypos - Player.height, 200, 100);
@@ -183,6 +200,15 @@ function showGameOver() {
 }
 
 function resetGame() {
+    if(GAME_OVER) {
+        LEVEL = 1;
+        KILL_COUNT = 0;
+        MONSTER_MISSILE_SPEED = 5;
+        INITIAL_MONSTER_SPEED = 1;
+        DELAY_MIN = 3500;
+        DELAY_MAX = 4000;
+    }
+
     restart.hide();
     explosionVideo.elt.currentTime = 0;
     GAME_OVER = false;
@@ -239,6 +265,7 @@ function draw() {
     } else {
         pre();
         background(backgroundImage);       
-        SP.updateSprites();   
+        SP.updateSprites();
+        drawStats(); 
     }
 }
