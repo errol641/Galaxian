@@ -5,11 +5,12 @@ let explosionVideo;
 let restart;
 const WIDTH = 1024;
 const HEIGHT = 768;
-const MISSILE_SPEED = 20;
-const MONSTER_MISSILE_SPEED = 5;
-const PLAYER_SPEED = 6;
-const DELAY_MIN = 3500;
-const DELAY_MAX = 4000;
+let MISSILE_SPEED = 20;
+let MONSTER_MISSILE_SPEED = 5;
+let INITIAL_MONSTER_SPEED = 1;
+let PLAYER_SPEED = 6;
+let DELAY_MIN = 3500;
+let DELAY_MAX = 4000;
 let GAME_OVER = false;
 let startTime;
 
@@ -45,8 +46,8 @@ function createMonsters() {
         let ypos = Math.floor(Math.random() * (HEIGHT/4));
         let monster = new Monster(monsterIMG, missileIMG, xpos, ypos, true);    
         monster.setBoundry(0,WIDTH - monsterIMG.width,0, 300, 'bounce');
-        monster.setxVel(getRandomInt(1,4) == 2? -1:1);
-        monster.setyVel(getRandomInt(1,4) == 3? 1:-1);
+        monster.setxVel(getRandomInt(0,1) == 0? -INITIAL_MONSTER_SPEED : INITIAL_MONSTER_SPEED);
+        monster.setyVel(getRandomInt(0,1) == 1? INITIAL_MONSTER_SPEED : -INITIAL_MONSTER_SPEED);
 
         monsterMissiles.push(monster.missile);
         Monsters.add(new Node(monster));
@@ -71,6 +72,7 @@ function fireMonsterMissiles() {
     while(monsterNode != null) {
         let monster = monsterNode.payload;
         monster.shootMissileTowards(Player);
+        monster.moveRandomly();
         monsterNode = monsterNode.next;
     }
 }
@@ -169,6 +171,7 @@ function checkKeys() {
 }
 
 function showGameOver() {
+    LEVEL = 1;
     background(0);
     background(gameOver);
     if(!explosionVideo.elt.ended) {
@@ -195,6 +198,8 @@ function resetGame() {
 
     createMonsters();
     createMissile();
+
+    startTime = + new Date().getTime();
 }
 
 function keyPressed() {
@@ -206,7 +211,13 @@ function keyPressed() {
 function pre() {
 
     if(NUM_ALIVE == 0) {
-        ++LEVEL; 
+        ++LEVEL;
+        if(LEVEL % 5 == 0) {
+            MONSTER_MISSILE_SPEED += 1;
+            INITIAL_MONSTER_SPEED += 1;
+            DELAY_MIN -= 200;
+            DELAY_MAX -= 200;
+        } 
         resetGame(); 
     }
     let passedTime = + new Date().getTime() - startTime;

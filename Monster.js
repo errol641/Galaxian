@@ -17,4 +17,11 @@ class Monster extends Sprite {
         this.missile.setVelocity(dx, dy);
         this.missile.setVisible(true);
     }
+    moveRandomly() {
+        let x = getRandomInt(0,5);
+        if(x == 0) {
+            this.xv += (getRandomInt(0,1) == 0? -1:1) * getRandomInt(1, 2);
+            this.yv += (getRandomInt(0,1) == 0? -1:1) * getRandomInt(1, 2);
+        }
+    }
 }
