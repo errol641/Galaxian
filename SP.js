@@ -10,15 +10,24 @@ class SP {
         while(ptr != null)
         {
             let sp = ptr.payload;
-            if(!sp.isDead)
+            if(sp.isVisible)
             {
                 if(sp.hasBounderies) {
                     sp.checkBoundaries();
                 }
                 sp.show();
-                sp.move();            
+                sp.move();
+                ptr = ptr.next;
+            } else if(!sp.isVisible) {
+                sp.setVelocity(0,0);
+                ptr = ptr.next;
+            } else if(sp.isDead) {
+                let hold = ptr;
+                ptr = ptr.next;
+                SP.sprites.remove(hold);
+            } else {
+                ptr = ptr.next;
             }
-            ptr = ptr.next;
         }   
     }
 

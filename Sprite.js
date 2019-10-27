@@ -1,7 +1,7 @@
 
 class Sprite extends SP {
 
-    constructor(img, xpos = 0, ypos = 0, isDead = true) {
+    constructor(img, xpos = 0, ypos = 0, isVisible = true) {
         super();
         this.xpos = xpos;
         this.ypos = ypos;
@@ -10,7 +10,8 @@ class Sprite extends SP {
         this.img = img;
         this.width = img.width;
         this.height = img.height;
-        this.isDead = isDead;
+        this.isVisible = isVisible;
+        this.isDead = false;
         this.hasBounderies = false;
     }
 
@@ -21,7 +22,7 @@ class Sprite extends SP {
         let dy;
         let dx;
 
-        if(this.isDead == true) {
+        if(!this.isVisible) {
             return false;
         }
 
@@ -46,15 +47,19 @@ class Sprite extends SP {
         } 
     }
 
+    setVisible(state) {
+        this.isVisible = state;
+    }
+
+    setDead(state) {
+        this.isDead = state;
+    }
+
     resize(w, h) {
         let { width, height, img } = this;
         img.resize(w, h);
         width = img.width;
         height = img.height;
-    }
-    
-    setDead(state) {
-        this.isDead = state;
     }
 
     setXY(xpos, ypos) {
