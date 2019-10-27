@@ -25,3 +25,13 @@
 .restart:focus {
     outline: none;
 }
+
+.p5Canvas {
+	border: 5px groove rgb(56, 149, 199);
+	-webkit-box-shadow: 5px 5px 15px 5px #318d99; 
+	box-shadow: 5px 5px 15px 5px #0b7588;
+}
+
+body {
+	background: linear-gradient(to right, rgb(146, 192, 218), rgb(16, 216, 151));
+}

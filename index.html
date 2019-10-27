@@ -14,7 +14,18 @@
     <script type="text/javascript" src="./Monster.js"></script>
     <title>Galaxian Fighter</title>
 </head>
-<body>
+<body id="body" ondblclick="doubleClick">
     <script type="text/javascript" src="./Galaxian.js"></script>
+    <script>
+            // Prevent text highlighting
+            document.addEventListener('mousedown', function (event) {
+            if (event.detail > 1) {
+                event.preventDefault();
+                // of course, you still do not know what you prevent here...
+                // You could also check event.ctrlKey/event.shiftKey/event.altKey
+                // to not prevent something useful.
+            }
+            }, false);
+    </script>
 </body>
 </html>

@@ -5,12 +5,7 @@ let explosionVideo;
 let restart;
 const WIDTH = 1024;
 const HEIGHT = 768;
-let MISSILE_SPEED = 20;
-let MONSTER_MISSILE_SPEED = 5;
-let INITIAL_MONSTER_SPEED = 1;
-let PLAYER_SPEED = 6;
-let DELAY_MIN = 3500;
-let DELAY_MAX = 4000;
+let MISSILE_SPEED = 30;
 let GAME_OVER = false;
 let startTime;
 
@@ -19,6 +14,12 @@ let NUM_MONSTERS = (LEVEL * 2) + 2;
 let NUM_MONSTER_MISSILES = NUM_MONSTERS;
 let NUM_ALIVE = NUM_MONSTERS;
 let KILL_COUNT = 0;
+
+let MONSTER_MISSILE_SPEED = 5;
+let INITIAL_MONSTER_SPEED = 1;
+let PLAYER_SPEED = 6;
+let DELAY_MIN = 3500;
+let DELAY_MAX = 4000;
 
 let Monsters = new LinkedList();
 let monsterMissiles = new Array();
@@ -124,12 +125,10 @@ function processCollisions() {
     }
 }
 
-function drawStats() {
-    textFont('Courier', 14);
-    fill(255);
-    text('Level: ' + LEVEL, 940 , 755);
-    //820,600
-    text('Kill Count: ' + KILL_COUNT, 10, 755);
+function drawText(txt, font, fontsize, color, x, y) {
+    textFont(font, fontsize);
+    fill(color)
+    text(txt, x, y);
 }
 
 function preload() {
@@ -155,7 +154,12 @@ function preload() {
 }
 
 function setup() {
-    createCanvas(WIDTH,HEIGHT);
+    let canvas = createCanvas(WIDTH,HEIGHT);
+
+    var x = (windowWidth - width) / 2;
+    var y = (windowHeight - height) / 2;
+    canvas.position(x, y);
+
     createMonsters();
     createPlayer();
     createMissile();
@@ -164,7 +168,7 @@ function setup() {
     restart.class("restart");
     restart.elt.addEventListener('click', resetGame);
     restart.size(200,50);
-    restart.position(WIDTH/2 - 100,HEIGHT/2 + 100);
+    restart.position(x + (width / 2) - 100, y + (height / 2) + 70);
     restart.hide();
 }
 
@@ -190,7 +194,8 @@ function checkKeys() {
 function showGameOver() { 
     background(0);
     background(gameOver);
-    drawStats();
+    drawText('Level:' + LEVEL, 'Courier', 20, 255, 925, 755);
+    drawText('Kill Count:' + KILL_COUNT, 'Courier', 30, 255, 395, 435); 
     if(!explosionVideo.elt.ended) {
         explosionVideo.play();
         image(explosionVideo, Player.xpos - 50, Player.ypos - Player.height, 200, 100);
@@ -207,6 +212,7 @@ function resetGame() {
         INITIAL_MONSTER_SPEED = 1;
         DELAY_MIN = 3500;
         DELAY_MAX = 4000;
+        Player.setXY(450, 690);
     }
 
     restart.hide();
@@ -241,9 +247,9 @@ function pre() {
         if(LEVEL % 5 == 0) {
             MONSTER_MISSILE_SPEED += 1;
             INITIAL_MONSTER_SPEED += 1;
-            DELAY_MIN -= 200;
-            DELAY_MAX -= 200;
-        } 
+            DELAY_MIN -= 400;
+            DELAY_MAX -= 400;
+        }   
         resetGame(); 
     }
     let passedTime = + new Date().getTime() - startTime;
@@ -255,10 +261,6 @@ function pre() {
     checkKeys();
 }
 
-let r = getRandomInt(0,255);
-let g = getRandomInt(0,255);
-let b = getRandomInt(0,255);
-
 function draw() {
     if(GAME_OVER) { 
         showGameOver(); 
@@ -266,6 +268,7 @@ function draw() {
         pre();
         background(backgroundImage);       
         SP.updateSprites();
-        drawStats(); 
+        drawText('Level:' + LEVEL, 'Courier', 20, 255, 925, 755);
+        drawText('Kill Count:' + KILL_COUNT, 'Courier', 20, 255, 10, 755); 
     }
 }
