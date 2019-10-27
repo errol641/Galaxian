@@ -27,9 +27,9 @@
 }
 
 .p5Canvas {
-	border: 5px groove rgb(56, 149, 199);
-	-webkit-box-shadow: 5px 5px 15px 5px #318d99; 
-	box-shadow: 5px 5px 15px 5px #0b7588;
+	border: 0.3rem ridge #132A3F;
+	-webkit-box-shadow: 0px 0px 15px 15px #132A3F; 
+	box-shadow: 0px 0px 15px 15px #132A3F;
 }
 
 body {

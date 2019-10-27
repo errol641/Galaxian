@@ -195,7 +195,7 @@ function showGameOver() {
     background(0);
     background(gameOver);
     drawText('Level:' + LEVEL, 'Courier', 20, 255, 925, 755);
-    drawText('Kill Count:' + KILL_COUNT, 'Courier', 30, 255, 395, 435); 
+    drawText('Kill Count:' + KILL_COUNT, 'Courier', 30, 255, 400, 435); 
     if(!explosionVideo.elt.ended) {
         explosionVideo.play();
         image(explosionVideo, Player.xpos - 50, Player.ypos - Player.height, 200, 100);
