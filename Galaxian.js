@@ -1,4 +1,8 @@
 let monsterIMG, playerImg, missileIMG;
+let popSound, explosionSound;
+let backgroundImage, gameOver;
+let explosionVideo;
+let restart;
 const WIDTH = 1024;
 const HEIGHT = 768;
 const MISSILE_SPEED = 20;
@@ -9,7 +13,7 @@ const DELAY_MAX = 4000;
 let GAME_OVER = false;
 let startTime;
 
-let LEVEL = 50;
+let LEVEL = 1;
 let NUM_MONSTERS = (LEVEL * 2) + 2;
 let NUM_MONSTER_MISSILES = NUM_MONSTERS;
 let NUM_ALIVE = NUM_MONSTERS;
@@ -87,8 +91,12 @@ function processCollisions() {
                 let hold = monsterNode;
                 monsterNode = monsterNode.next;
                 Monsters.remove(hold);
-
                 --NUM_ALIVE;
+
+                if(!popSound.isPlaying()) {
+                    popSound.play();
+                }
+
             } else {
                 monsterNode = monsterNode.next;
             }
@@ -98,9 +106,11 @@ function processCollisions() {
     for(let i = 0; i < monsterMissiles.length; i++) {
         let missile = monsterMissiles[i];
         if(missile.isOnScreen() && missile.ypos >= 550 && missile.collidesWith(Player)) {
+            explosionSound.play();
             Player.setVisible(false);
             missile.setVisible(false);
-            GAME_OVER = true;            
+            GAME_OVER = true; 
+            break;           
         }
     }
 }
@@ -111,6 +121,18 @@ function preload() {
     missileIMG = loadImage('./data/rocket.png', img => {
         img.resize(30,0);
     });
+
+    soundFormats('wav');
+    popSound = loadSound('./data/pop.wav');
+    popSound.setVolume(0.25);
+    explosionSound = loadSound('./data/explode.wav');
+    explosionSound.setVolume(0.25);
+
+    backgroundImage = loadImage('./data/background.png');
+    gameOver = loadImage('./data/gameOver.png');
+
+    explosionVideo = createVideo('./data/explosion_gif.mp4');
+    explosionVideo.hide();
 }
 
 function setup() {
@@ -119,6 +141,12 @@ function setup() {
     createPlayer();
     createMissile();
     startTime = + new Date().getTime();
+    restart = createButton('Restart');
+    restart.class("restart");
+    restart.elt.addEventListener('click', resetGame);
+    restart.size(200,50);
+    restart.position(WIDTH/2 - 100,HEIGHT/2 + 100);
+    restart.hide();
 }
 
 function checkKeys() {
@@ -140,7 +168,20 @@ function checkKeys() {
     }
 }
 
+function showGameOver() {
+    background(0);
+    background(gameOver);
+    if(!explosionVideo.elt.ended) {
+        explosionVideo.play();
+        image(explosionVideo, Player.xpos - 50, Player.ypos - Player.height, 200, 100);
+    } else {
+        restart.show();
+    }
+}
+
 function resetGame() {
+    restart.hide();
+    explosionVideo.elt.currentTime = 0;
     GAME_OVER = false;
     NUM_MONSTERS = (LEVEL * 2) + 2;
     NUM_ALIVE = NUM_MONSTER_MISSILES = NUM_MONSTERS;
@@ -167,8 +208,6 @@ function pre() {
     if(NUM_ALIVE == 0) {
         ++LEVEL; 
         resetGame(); 
-    } else if(GAME_OVER) {
-        resetGame();
     }
     let passedTime = + new Date().getTime() - startTime;
     if(passedTime >= getRandomInt(DELAY_MIN,DELAY_MAX)) {
@@ -184,7 +223,11 @@ let g = getRandomInt(0,255);
 let b = getRandomInt(0,255);
 
 function draw() {
-    pre();
-    background(r,g,b);          
-    SP.updateSprites();   
+    if(GAME_OVER) { 
+        showGameOver(); 
+    } else {
+        pre();
+        background(backgroundImage);       
+        SP.updateSprites();   
+    }
 }

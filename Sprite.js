@@ -59,7 +59,7 @@ class Sprite extends SP {
         let { width, height, img } = this;
         img.resize(w, h);
         width = img.width;
-        height = img.height;
+        height = img.height;        
     }
 
     setXY(xpos, ypos) {
